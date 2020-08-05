@@ -1,0 +1,78 @@
+>>> Início da Sprint: Sincronizar a branch de test com o conteúdo da dev.
+git checkout test
+git merge dev
+Início do desenvolvimento de um chamado (FAT-10): Puxar código da dev para uma feature branch (de preferência com o número do chamado).
+git checkout dev
+git checkout -b FAT-10
+Envio do chamado para testes: Realizar o commit na branch do chamado e enviar para a branch de test.
+git add -A
+git commit -m “Mensagem do chamado”
+git push origin FAT-10
+git checkout test (Realizado automaticamente pelo Pipeline, necessário apenas caso haja conflito no merge)
+git merge FAT-10 (Realizado automaticamente pelo Pipeline, necessário apenas caso haja conflito no merge)
+Aprovação do chamado: Aprovação do chamado pela equipe de testes.
+Preparação do chamado para finalização: Na branch do chamado, puxar o código presente na dev para, caso outros chamados aprovados já terem sido enviados, poder resolver possíveis conflitos na branch do próprio chamado.
+git checkout FAT-10
+git merge dev (Resolver qualquer conflito que possa surgir nessa etapa)
+Finalização do chamado: Enviar o código desenvolvido e já livre de possíveis conflitos para a branch dev.
+git checkout dev
+git merge FAT-10
+git push origin dev
+Início de desenvolvimento um novo chamado (FAT-11): Atualizar a dev local e utilizar o código contigo nessa branch para criar a nova branch do chamado.
+git checkout dev
+git pull origin dev
+git checkout -b FAT-11
+Envio do chamado para teste: Vide item 3.
+Reprovação do chamado: Reprovação do chamado pela equipe de testes.
+Envio de correção de erro apontado pela equipe de testes: Continuar desenvolvimento na branch do chamado e, ao finalizar enviar novamente o chamado para teste. Em caso de dúvida, vide item 3.
+Aprovação do chamado: Aprovação do chamado pela equipe de testes.
+Preparação para finalização do chamado: Vide item 5.
+Finalização do chamado: Vide item 6.
+Finalização da Sprint: Modificar a versão do pom.xml e enviar o código para master, onde será criada uma tag com o número da versão.
+git checkout dev
+Modificação do número da versão do pom: Remoção do SNAPSHOT
+git add -A
+git commit -m “Fechamento da versão X”
+git push origin dev
+git checkout master
+git merge dev
+git push origin master
+git checkout dev
+Modificação da versão do pom.xml: Adição de 1 na Minor (1.X+1.0) e adição do termo SNAPSHOT
+git add -A
+git commit -m “Commit inicial da versão X+1”
+git push origin dev
+Criação da Tag da versão: Criação da tag da versão para que haja um ponto de fácil retorno ao código da versão quando foi lançada. Esse passo será feito automaticamente pelo Pipeline.
+
+>>> Fluxo Hotfix Padrão
+
+Início do desenvolvimento de correção: Puxar o código da master para um hotfix branch com a seguinte nomenclatura: hotfix-X.X.X+1. Exemplo: Foi encontrado um problema na versão 1.50.0 logo o branch a ser criado será o hotfix-1.50.1.
+git checkout master
+git pull origin master
+git checkout hotfix-1.50.1 (Exemplo de nomenclatura)
+Envio da correção para aprovação: Commit do código para geração de uma imagem docker a ser testada no ambiente adequado.
+git add -A
+git commit -m “Mensagem da correção”
+git push origin hotfix-1.50.1
+Finalização da correção: Envio do código corrigido para a master para geração de nova versão.
+Modificação da versão no pom.xml: Adição de 1 na Patch (50.X+1).
+git add -A
+git commit -m “Finalização da versão X”
+git push origin hotfix-1.50.1
+git checkout master
+git merge hotfix-1.50.1
+git push origin master
+Sincronização de correção com a versão em desenvolvimento: Envio do código contendo a correção para a dev.
+git checkout dev
+git merge hotfix-1.50.1
+git push origin dev
+Criação da Tag da versão: Criação da tag da versão para que haja um ponto de fácil retorno ao código da versão quando foi lançada. Esse passo será feito automaticamente pelo Pipeline.
+
+>>> Fluxo Hotfix Versão Antiga
+
+Checkout da tag da versão antiga com bug para a branch hotfix-versão.
+Commit ao longo do desenvolvimento.
+Geração de imagem 1.59.1
+Após finalização de todos os chamados relacionados ao hotfix-versão, gerar uma tag manualmente para a nova versão.
+
+Merge da branch hotfix-versão com a master para passar essas modificações para a versão mais atual. Modificação de pom para um novo patch. Geração automática de tag e imagem docker da nova versão mais atual.
